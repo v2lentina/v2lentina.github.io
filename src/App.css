@@ -9,136 +9,13 @@
 }
 
 .app.dark {
-  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+  background: linear-gradient(135deg, #212b31 0%, #3e515b 50%, #658190 100%);
   color: #fff;
 }
 
 .app.light {
-  background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 50%, #3b82f6 100%);
+  background: linear-gradient(135deg, #cfe2f9 0%, #7db5f9 50%, #5a95f6 100%);
   color: #000;
-}
-
-/* Aurora Background */
-.aurora {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.aurora-layer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  will-change: transform;
-  transform: translate3d(var(--aurora-x, 0), var(--aurora-y, 0), 0);
-  opacity: calc(0.4 * var(--aurora-intensity, 1));
-}
-
-.app.light .aurora-layer {
-  opacity: calc(0.25 * var(--aurora-intensity, 1));
-}
-
-/* Layer 1: Soft blue-indigo radial, slow drift left-up */
-.aurora-layer--1 {
-  background: radial-gradient(
-    ellipse 800px 600px at 30% 40%,
-    rgba(99, 102, 241, 0.5) 0%,
-    rgba(79, 70, 229, 0.2) 30%,
-    transparent 70%
-  );
-  animation: aurora-drift-1 60s ease-in-out infinite;
-}
-
-/* Layer 2: Purple-blue radial, slower drift right-down */
-.aurora-layer--2 {
-  background: radial-gradient(
-    ellipse 700px 700px at 70% 60%,
-    rgba(139, 92, 246, 0.4) 0%,
-    rgba(99, 102, 241, 0.15) 25%,
-    transparent 65%
-  );
-  animation: aurora-drift-2 80s ease-in-out infinite;
-  animation-delay: -20s;
-}
-
-/* Layer 3: Deep indigo with subtle linear tint */
-.aurora-layer--3 {
-  background: linear-gradient(
-    135deg,
-    rgba(67, 56, 202, 0.2) 0%,
-    transparent 50%
-  ),
-  radial-gradient(
-    ellipse 900px 500px at 50% 20%,
-    rgba(79, 70, 229, 0.3) 0%,
-    transparent 60%
-  );
-  animation: aurora-drift-3 70s ease-in-out infinite;
-  animation-delay: -10s;
-}
-
-/* Keyframe animations: subtle drifting */
-@keyframes aurora-drift-1 {
-  0%, 100% {
-    transform: translate3d(0, 0, 0);
-  }
-  25% {
-    transform: translate3d(-30px, -40px, 0);
-  }
-  50% {
-    transform: translate3d(-20px, 50px, 0);
-  }
-  75% {
-    transform: translate3d(40px, -30px, 0);
-  }
-}
-
-@keyframes aurora-drift-2 {
-  0%, 100% {
-    transform: translate3d(0, 0, 0);
-  }
-  25% {
-    transform: translate3d(50px, 30px, 0);
-  }
-  50% {
-    transform: translate3d(-40px, 60px, 0);
-  }
-  75% {
-    transform: translate3d(30px, -50px, 0);
-  }
-}
-
-@keyframes aurora-drift-3 {
-  0%, 100% {
-    transform: translate3d(0, 0, 0);
-  }
-  25% {
-    transform: translate3d(-40px, 60px, 0);
-  }
-  50% {
-    transform: translate3d(60px, -30px, 0);
-  }
-  75% {
-    transform: translate3d(-50px, 40px, 0);
-  }
-}
-
-/* Respect user's motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .aurora-layer {
-    animation: none !important;
-    opacity: 0.15 !important;
-  }
-
-  .app.light .aurora-layer {
-    opacity: 0.08 !important;
-  }
 }
 
 /* Header */
@@ -216,6 +93,17 @@
   font-size: 1.1rem;
   line-height: 1.8;
   margin-bottom: 1.5rem;
+}
+
+/* Links */
+a {
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  transition: border-color 0.1s ease, color 0.1s ease;
+}
+
+a:hover {
+  border-color: transparent;
 }
 
 /* Footer */

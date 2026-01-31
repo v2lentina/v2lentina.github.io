@@ -9,7 +9,7 @@ export default function Header({ onToggleDarkMode }: HeaderProps) {
   return (
     <header className="header">
       <div className="header-content">
-        <div className="logo">Valentina Gretz</div>
+        <div className="logo">valentina gretz</div>
         <button
           className="theme-toggle"
           onClick={onToggleDarkMode}
