@@ -1,6 +1,5 @@
 import { IoSunnyOutline } from "react-icons/io5";
 
-// Expected properties by header component: onToggleDarkMode (function)
 interface HeaderProps {
   onToggleDarkMode: () => void;
 }
