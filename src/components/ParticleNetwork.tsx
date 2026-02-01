@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Particle {
   x: number;
@@ -34,117 +34,126 @@ export default function ParticleNetwork({
     line: isDark ? "rgba(150, 150, 150, " : "rgba(80, 100, 130, ",
   };
 
-  const initializeParticles = (width: number, height: number) => {
-    const particles: Particle[] = [];
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        speedx: (Math.random() - 0.5) * 0.5,
-        speedy: (Math.random() - 0.5) * 0.5,
-        radius: Math.random() * 1.5 + 0.5,
-      });
-    }
-    particlesRef.current = particles;
-  };
-
-  const updateParticles = (width: number, height: number) => {
-    const particles = particlesRef.current;
-    const mouse = mouseRef.current;
-
-    particles.forEach((particle) => {
-      particle.x += particle.speedx;
-      particle.y += particle.speedy;
-
-      if (
-        particle.x - particle.radius < 0 ||
-        particle.x + particle.radius > width
-      ) {
-        particle.speedx *= -0.9;
-        particle.x = Math.max(
-          particle.radius,
-          Math.min(width - particle.radius, particle.x)
-        );
+  const initializeParticles = useCallback(
+    (width: number, height: number) => {
+      const particles: Particle[] = [];
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          speedx: (Math.random() - 0.5) * 0.5,
+          speedy: (Math.random() - 0.5) * 0.5,
+          radius: Math.random() * 1.5 + 0.5,
+        });
       }
-      if (
-        particle.y - particle.radius < 0 ||
-        particle.y + particle.radius > height
-      ) {
-        particle.speedy *= -0.9;
-        particle.y = Math.max(
-          particle.radius,
-          Math.min(height - particle.radius, particle.y)
-        );
-      }
+      particlesRef.current = particles;
+    },
+    [particleCount]
+  );
 
-      // Mouse repulsion
-      const dx = particle.x - mouse.x;
-      const dy = particle.y - mouse.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
+  const updateParticles = useCallback(
+    (width: number, height: number) => {
+      const particles = particlesRef.current;
+      const mouse = mouseRef.current;
 
-      if (distance < repulsionRadius && distance > 0) {
-        const force =
-          (repulsionStrength * (repulsionRadius - distance)) / repulsionRadius;
-        particle.speedx += (dx / distance) * force;
-        particle.speedy += (dy / distance) * force;
-      }
+      particles.forEach((particle) => {
+        particle.x += particle.speedx;
+        particle.y += particle.speedy;
 
-      particle.speedx *= 0.98;
-      particle.speedy *= 0.98;
+        if (
+          particle.x - particle.radius < 0 ||
+          particle.x + particle.radius > width
+        ) {
+          particle.speedx *= -0.9;
+          particle.x = Math.max(
+            particle.radius,
+            Math.min(width - particle.radius, particle.x)
+          );
+        }
+        if (
+          particle.y - particle.radius < 0 ||
+          particle.y + particle.radius > height
+        ) {
+          particle.speedy *= -0.9;
+          particle.y = Math.max(
+            particle.radius,
+            Math.min(height - particle.radius, particle.y)
+          );
+        }
 
-      particle.speedx += (Math.random() - 0.5) * 0.02;
-      particle.speedy += (Math.random() - 0.5) * 0.02;
-    });
-  };
-
-  const draw = (
-    ctx: CanvasRenderingContext2D,
-    width: number,
-    height: number
-  ) => {
-    ctx.fillStyle = "rgba(0, 0, 0, 0)";
-    ctx.clearRect(0, 0, width, height);
-
-    const particles = particlesRef.current;
-
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
+        // Mouse repulsion
+        const dx = particle.x - mouse.x;
+        const dy = particle.y - mouse.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < maxDistance) {
-          const opacity = (1 - distance / maxDistance) * 0.4;
-          ctx.strokeStyle = `${colors.line}${opacity})`;
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
+        if (distance < repulsionRadius && distance > 0) {
+          const force =
+            (repulsionStrength * (repulsionRadius - distance)) /
+            repulsionRadius;
+          particle.speedx += (dx / distance) * force;
+          particle.speedy += (dy / distance) * force;
+        }
+
+        particle.speedx *= 0.98;
+        particle.speedy *= 0.98;
+
+        particle.speedx += (Math.random() - 0.5) * 0.02;
+        particle.speedy += (Math.random() - 0.5) * 0.02;
+      });
+    },
+    [repulsionRadius, repulsionStrength]
+  );
+
+  const draw = useCallback(
+    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+      ctx.fillStyle = "rgba(0, 0, 0, 0)";
+      ctx.clearRect(0, 0, width, height);
+
+      const particles = particlesRef.current;
+
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < maxDistance) {
+            const opacity = (1 - distance / maxDistance) * 0.4;
+            ctx.strokeStyle = `${colors.line}${opacity})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
         }
       }
-    }
 
-    particles.forEach((particle) => {
-      ctx.fillStyle = colors.particle;
-      ctx.beginPath();
-      ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-      ctx.fill();
-    });
-  };
+      particles.forEach((particle) => {
+        ctx.fillStyle = colors.particle;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    },
+    [colors.line, colors.particle, maxDistance]
+  );
 
-  const animate = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  const animate = useCallback(
+    function loop() {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    updateParticles(canvas.width, canvas.height);
-    draw(ctx, canvas.width, canvas.height);
+      updateParticles(canvas.width, canvas.height);
+      draw(ctx, canvas.width, canvas.height);
 
-    animationIdRef.current = requestAnimationFrame(animate);
-  };
+      animationIdRef.current = requestAnimationFrame(loop);
+    },
+    [draw, updateParticles]
+  );
 
   const handleResize = () => {
     const canvas = canvasRef.current;
@@ -159,6 +168,14 @@ export default function ParticleNetwork({
     mouseRef.current = { x: e.clientX, y: e.clientY };
   };
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    if (dimensions.width === 0 || dimensions.height === 0) return;
+
+    initializeParticles(dimensions.width, dimensions.height);
+  }, [dimensions.width, dimensions.height, initializeParticles, particleCount]);
+
   // Setup and cleanup
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -167,8 +184,6 @@ export default function ParticleNetwork({
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     setDimensions({ width: canvas.width, height: canvas.height });
-
-    initializeParticles(canvas.width, canvas.height);
 
     animationIdRef.current = requestAnimationFrame(animate);
 
@@ -182,7 +197,14 @@ export default function ParticleNetwork({
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [isDark, particleCount, maxDistance, repulsionRadius, repulsionStrength]);
+  }, [
+    animate,
+    isDark,
+    maxDistance,
+    particleCount,
+    repulsionRadius,
+    repulsionStrength,
+  ]);
 
   return (
     <canvas
