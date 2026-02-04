@@ -159,9 +159,42 @@ export default function ParticleNetwork({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    setDimensions({ width: canvas.width, height: canvas.height });
+    const oldWidth = canvas.width;
+    const oldHeight = canvas.height;
+    const newWidth = window.innerWidth;
+    const newHeight = window.innerHeight;
+
+    if (oldWidth > 0 && oldHeight > 0) {
+      particlesRef.current.forEach((p) => {
+        p.x *= newWidth / oldWidth;
+        p.y *= newHeight / oldHeight;
+      });
+
+      const baseArea = 1440 * 900;
+      const newArea = newWidth * newHeight;
+      const targetCount = Math.max(
+        40,
+        Math.floor(particleCount * (newArea / baseArea))
+      );
+      const currentCount = particlesRef.current.length;
+
+      if (targetCount < currentCount) {
+        particlesRef.current = particlesRef.current.slice(0, targetCount);
+      } else if (targetCount > currentCount) {
+        for (let i = currentCount; i < targetCount; i++) {
+          particlesRef.current.push({
+            x: Math.random() * newWidth,
+            y: Math.random() * newHeight,
+            speedx: (Math.random() - 0.5) * 0.5,
+            speedy: (Math.random() - 0.5) * 0.5,
+            radius: Math.random() * 1.5 + 0.5,
+          });
+        }
+      }
+    }
+
+    canvas.width = newWidth;
+    canvas.height = newHeight;
   };
 
   const handleMouseMove = (e: MouseEvent) => {
