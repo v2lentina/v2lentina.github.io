@@ -34,10 +34,17 @@ export default function ParticleNetwork({
     line: isDark ? "rgba(150, 150, 150, " : "rgba(80, 100, 130, ",
   };
 
+  const getOptimalParticleCount = (width: number, height: number) => {
+    const baseArea = 1440 * 900;
+    const screenArea = width * height;
+    return Math.max(40, Math.floor(particleCount * (screenArea / baseArea)));
+  };
+
   const initializeParticles = useCallback(
     (width: number, height: number) => {
+      const optimalCount = getOptimalParticleCount(width, height);
       const particles: Particle[] = [];
-      for (let i = 0; i < particleCount; i++) {
+      for (let i = 0; i < optimalCount; i++) {
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
@@ -170,12 +177,7 @@ export default function ParticleNetwork({
         p.y *= newHeight / oldHeight;
       });
 
-      const baseArea = 1440 * 900;
-      const newArea = newWidth * newHeight;
-      const targetCount = Math.max(
-        40,
-        Math.floor(particleCount * (newArea / baseArea))
-      );
+      const targetCount = getOptimalParticleCount(newWidth, newHeight);
       const currentCount = particlesRef.current.length;
 
       if (targetCount < currentCount) {
