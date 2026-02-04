@@ -203,6 +203,12 @@ export default function ParticleNetwork({
     mouseRef.current = { x: e.clientX, y: e.clientY };
   };
 
+  const handleTouchMove = (e: TouchEvent) => {
+    if (e.touches.length > 0) {
+      mouseRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -224,6 +230,7 @@ export default function ParticleNetwork({
 
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove);
 
     return () => {
       if (animationIdRef.current) {
@@ -231,6 +238,7 @@ export default function ParticleNetwork({
       }
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
     };
   }, [
     animate,
