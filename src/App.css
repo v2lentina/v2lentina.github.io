@@ -117,4 +117,8 @@ a:hover {
   .container {
     padding: 1.5rem;
   }
+
+  .header-content {
+    padding: 0 1.5rem;
+  }
 }
