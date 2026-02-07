@@ -65,6 +65,8 @@
   max-width: 600px;
   margin: 0 auto;
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* About Section */
@@ -72,6 +74,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
   padding: 4rem 0rem;
   position: relative;
   z-index: 1;
